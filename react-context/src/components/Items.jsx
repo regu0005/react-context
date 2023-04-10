@@ -1,13 +1,27 @@
-import React from 'react'
-import { Link } from 'react-router-dom'
-import favadd from '../assets/fav-add.png'
-
-// CONTEXT AND LOCAL STORAGE
-import { useLocalStorage } from "../hooks/UseLocalStorage";
+import React, { useState, useEffect } from 'react';
 import { useUser } from '../context/UserContext';
+import favadd from '../assets/fav-add.png'
+import favremove from '../assets/fav-remove.png'
 
+// USERS DATA
+const USERS_URL = 'https://random-data-api.com/api/v2/users?size=20';
 
-export const Items = ( { users } ) => {
+export const Items = ( ) => {
+  const [ users, setUsers ] = useState([]);
+  useEffect( () => {
+    fetch(USERS_URL)
+      .then(
+        (res) => res.json()
+      )
+      .then(
+        (data) => {
+          setUsers(data)
+        }
+      )
+      .catch(function(err){
+       
+      })
+  }, [] );
 
   const [ userC, setUserC ] = useUser();
 
@@ -20,16 +34,27 @@ export const Items = ( { users } ) => {
 
     const userExists = existingData.findIndex((existingUser) => existingUser.uid === newUser.uid);
     
-    // User doesn't exist then add to localstorage
+    // If User doesn't exist then add to localstorage
     if (userExists == -1)
     {
-        // Append the new user to the existing data
+        // Append the new user to the existing data and validate 
         const newData = Array.isArray(existingData) && existingData.length > 0
         ? [...existingData, newUser]
         : [newUser];
 
         setUserC(newData);
     }
+  };
+
+  const isUserAdded = (user) => {
+    const { uid } = user;
+    return userC.some((addedUser) => addedUser.uid === uid);
+  };
+
+  const handleRemoveFavorite = (user) => {
+    const { uid } = user;
+    const newData = userC.filter((addedUser) => addedUser.uid !== uid);
+    setUserC(newData);
   };
 
   return (
@@ -43,7 +68,7 @@ export const Items = ( { users } ) => {
             <ul className="user-list">
               {
                 users.map((user) => (
-                  <Link key={user.id} to={`/items/${user.id}`} className="user-list-link">
+                  <li key={user.id} >
                     <div className="user-list-image">
                       <img src={user.avatar} width="90px" />
                     </div>
@@ -56,11 +81,18 @@ export const Items = ( { users } ) => {
                         </div>
                     </div>
                     <div>
-                    <button onClick={() => handleAddFavorite(user)}>
-                      <img src={favadd} width="40rem"/>
-                    </button>
+                      { isUserAdded(user)
+                        ?
+                          <button onClick={() => handleRemoveFavorite(user)}>
+                            <img src={favremove} width="40rem"/>
+                          </button>
+                        :
+                          <button onClick={() => handleAddFavorite(user)}>
+                            <img src={favadd} width="40rem"/>
+                          </button>
+                      }
                     </div>
-                  </Link>
+                  </li>
                 ))
               }
             </ul>
