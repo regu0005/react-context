@@ -1,43 +1,35 @@
 import React from 'react'
-import { Link, Outlet } from 'react-router-dom'
+import { Link } from 'react-router-dom'
 import favadd from '../assets/fav-add.png'
 
 // CONTEXT AND LOCAL STORAGE
-import { Component , useEffect } from "react"
 import { useLocalStorage } from "../hooks/UseLocalStorage";
 import { useUser } from '../context/UserContext';
 
-const person = {
-  id: crypto.randomUUID(),
-  name: '1 Harry Potter',
-  email: '1harry@hogwarts.org'
-}
-const person2 = [
-  {
-    id: crypto.randomUUID(),
-    name: '2 Harry Potter',
-    email: '2harry@hogwarts.org'
-  },
-  {
-    id: crypto.randomUUID(),
-    name: '3 Harry Potter',
-    email: '3harry@hogwarts.org'
-  }
-];
-// END CONTEXT AND LOCAL STORAGE
 
 export const Items = ( { users } ) => {
-  //
+
   const [ userC, setUserC ] = useUser();
 
-  // useEffect( () => {
-  //   setUserC(person2);
-  // }, []);
-  //
-
   const handleAddFavorite = (user) => {
-  // Update the userC state with the newly added user
-  setUserC(user);
+
+    const { uid, first_name, last_name, avatar, email } = user;
+    const newUser = { uid, first_name, last_name, avatar, email };
+
+    const existingData = JSON.parse(localStorage.getItem('MyUserAppLocalStorage')) || [];
+
+    const userExists = existingData.findIndex((existingUser) => existingUser.uid === newUser.uid);
+    
+    // User doesn't exist then add to localstorage
+    if (userExists == -1)
+    {
+        // Append the new user to the existing data
+        const newData = Array.isArray(existingData) && existingData.length > 0
+        ? [...existingData, newUser]
+        : [newUser];
+
+        setUserC(newData);
+    }
   };
 
   return (
@@ -72,12 +64,6 @@ export const Items = ( { users } ) => {
                 ))
               }
             </ul>
-
-            <p>
-              {userC && userC.name} 
-              {userC && userC.email} 
-              {userC && userC.id}
-            </p>
 
         </div>
     </div>
