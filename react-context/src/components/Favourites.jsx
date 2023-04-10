@@ -11,7 +11,7 @@ export const Favourites = () => {
   
   const isUserAdded = (user) => {
     const { uid } = user;
-    return userC.some((addedUser) => addedUser.uid === uid);
+    return userC && userC.some((addedUser) => addedUser.uid === uid);
   };
 
   const handleRemoveFavorite = (user) => {
@@ -27,32 +27,41 @@ export const Favourites = () => {
           <h1>List of Favourites</h1>
         </div>
         <div className="left-block">
-          <ul className="user-list">
-            {
-              existingData.map((user) =>
-                isUserAdded(user) ? (
-                  <li key={user.uid}>
-                    <div className="user-list-image">
-                      <img src={user.avatar} width="90px" alt="User Avatar" />
-                    </div>
-                    <div className="user-list-name">
-                      <div>
-                          {user.name} {user.first_name} {user.last_name}
+        {
+          existingData.length ? (
+            <ul className="user-list">
+              {
+                existingData.map((user) =>
+
+                  isUserAdded(user) ? (
+                    <li key={user.uid}>
+                      <div className="user-list-image">
+                        <img src={user.avatar} width="90px" alt="User Avatar" />
+                      </div>
+                      <div className="user-list-name">
+                        <div>
+                            {user.name} {user.first_name} {user.last_name}
+                        </div>
+                        <div>
+                            {user.email}
+                        </div>
                       </div>
                       <div>
-                          {user.email}
+                        <button onClick={() => handleRemoveFavorite(user)}>
+                          <img src={favremove} width="40rem" alt="Remove Favorite" />
+                        </button>
                       </div>
-                    </div>
-                    <div>
-                      <button onClick={() => handleRemoveFavorite(user)}>
-                        <img src={favremove} width="40rem" alt="Remove Favorite" />
-                      </button>
-                    </div>
-                  </li>
-                ) : null
-              )
-            }
-          </ul>
+                    </li>
+                  ) : null
+                )
+              }
+            </ul>
+          ) : (
+            <div className="error-page">
+              <p>Your favourites list is empty</p>
+              <a href="/">Back to Home</a>
+            </div>
+          )}
         </div>
       </div>
     </>

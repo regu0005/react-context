@@ -48,8 +48,9 @@ export const Items = ( ) => {
 
   const isUserAdded = (user) => {
     const { uid } = user;
-    return userC.some((addedUser) => addedUser.uid === uid);
+    return userC && userC.some((addedUser) => addedUser.uid === uid);
   };
+
 
   const handleRemoveFavorite = (user) => {
     const { uid } = user;
