@@ -28,7 +28,7 @@ export const Favourites = () => {
         </div>
         <div className="left-block">
         {
-          existingData.length ? (
+          existingData && existingData.length ? (
             <ul className="user-list">
               {
                 existingData.map((user) =>
